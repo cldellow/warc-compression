@@ -19,7 +19,7 @@ do_gzip() {
     zcat entries/*gz > /dev/null
     now=$(date +%s%3N)
     cat_elapsed=$((now-$nownow))
-    echo -e "gzip -$x\t$elapsed\t$cat_elapsed\t$(cat entries/*.gz | wc --bytes)"
+    echo -e "gzip -$x\t$elapsed\t$cat_elapsed\t$(cat entries/*.gz | wc --bytes)\t$(cat entries.bak/* | wc --bytes)"
   done
 }
 
@@ -34,7 +34,7 @@ do_zstd() {
     zstdcat entries/*zst > /dev/null
     now=$(date +%s%3N)
     cat_elapsed=$((now-$nownow))
-    echo -e "zstd -$x\t$elapsed\t$cat_elapsed\t$(cat entries/*.zst | wc --bytes)"
+    echo -e "zstd -$x\t$elapsed\t$cat_elapsed\t$(cat entries/*.zst | wc --bytes)\t$(cat entries.bak/* | wc --bytes)"
   done
 }
 
@@ -51,7 +51,7 @@ do_zstd_dict() {
     zstdcat -D dictionary entries/*zst > /dev/null
     now=$(date +%s%3N)
     cat_elapsed=$((now-$nownow))
-    echo -e "zstd -$x, dict\t$elapsed\t$cat_elapsed\t$(cat entries/*.zst | wc --bytes)"
+    echo -e "zstd -$x, dict\t$elapsed\t$cat_elapsed\t$(cat entries/*.zst | wc --bytes)\t$(cat entries.bak/* | wc --bytes)"
   done
 }
 
@@ -66,7 +66,7 @@ do_lz4() {
     lz4cat entries/*lz4 > /dev/null
     now=$(date +%s%3N)
     cat_elapsed=$((now-$nownow))
-    echo -e "lz4 -$x\t$elapsed\t$cat_elapsed\t$(cat entries/*.lz4 | wc --bytes)"
+    echo -e "lz4 -$x\t$elapsed\t$cat_elapsed\t$(cat entries/*.lz4 | wc --bytes)\t$(cat entries.bak/* | wc --bytes)"
   done
 
 }
