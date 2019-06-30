@@ -43,7 +43,7 @@ do_zstd_dict() {
     rm -rf entries entries-samples
     cp -ar entries.bak entries
     cp -ar entries-samples.bak entries-samples
-    zstd -"$x" --train entries-samples/*
+    zstd -"$x" --quiet --train entries-samples/*
     now=$(date +%s%3N)
     zstd -"$x" -D dictionary entries/*
     nownow=$(date +%s%3N)
@@ -63,7 +63,7 @@ do_lz4() {
     lz4 -"$x" -m entries/*
     nownow=$(date +%s%3N)
     elapsed=$((nownow-now))
-    lz4cat entries/*lz4 > /dev/null
+    lz4cat -m entries/*lz4 > /dev/null
     now=$(date +%s%3N)
     cat_elapsed=$((now-$nownow))
     echo -e "lz4 -$x\t$elapsed\t$cat_elapsed\t$(cat entries/*.lz4 | wc --bytes)\t$(cat entries.bak/* | wc --bytes)"
@@ -76,7 +76,7 @@ do_extract "$@"
 mv entries entries.bak
 mv entries-samples entries-samples.bak
 
-#do_gzip "$@"
+do_gzip "$@"
+do_lz4 "$@"
 do_zstd "$@"
-#do_zstd_dict "$@"
-#do_lz4 "$@"
+do_zstd_dict "$@"

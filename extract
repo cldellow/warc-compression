@@ -16,7 +16,7 @@ else
   kind=${1:?must specify kind, "warc" or "wet"}
 
   if [ "$kind" == "warc" ] || [ "$kind" == "wet" ]; then
-    "$here"/extract-entries ./train."$kind".gz 5000
+    "$here"/extract-entries ./train."$kind".gz
     rm -rf entries-samples
     mv entries entries-samples
     for x in entries-samples/*; do
@@ -24,7 +24,7 @@ else
       mv x "$x"
     done
 
-    "$here"/extract-entries ./test."$kind".gz 5000
+    "$here"/extract-entries ./test."$kind".gz
   else
     echo "unknown kind: $kind" > /dev/stderr
     exit 1
