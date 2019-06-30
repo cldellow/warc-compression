@@ -63,7 +63,7 @@ do_lz4() {
     lz4 -"$x" -m entries/*
     nownow=$(date +%s%3N)
     elapsed=$((nownow-now))
-    lz4cat -m entries/*lz4 > /dev/null
+    cat entries/*lz4 | lz4cat > /dev/null
     now=$(date +%s%3N)
     cat_elapsed=$((now-$nownow))
     echo -e "lz4 -$x\t$elapsed\t$cat_elapsed\t$(cat entries/*.lz4 | wc --bytes)\t$(cat entries.bak/* | wc --bytes)"
@@ -76,7 +76,7 @@ do_extract "$@"
 mv entries entries.bak
 mv entries-samples entries-samples.bak
 
-do_gzip "$@"
+#do_gzip "$@"
 do_lz4 "$@"
-do_zstd "$@"
-do_zstd_dict "$@"
+#do_zstd "$@"
+#do_zstd_dict "$@"
