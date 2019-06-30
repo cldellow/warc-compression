@@ -71,6 +71,7 @@ do_lz4() {
 
 }
 
+rm -rf entries*
 do_extract "$@"
 mv entries entries.bak
 mv entries-samples entries-samples.bak
