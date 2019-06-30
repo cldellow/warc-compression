@@ -5,12 +5,12 @@ here=$(dirname "${BASH_SOURCE[0]}")
 here=$(readlink -f "$here")
 
 do_extract() {
-  "$here"/extract
+  "$here"/extract "$@"
 }
 
 do_gzip() {
   for x in {1..9}; do
-    do_extract
+    do_extract "$@"
     now=$(date +%s%3N)
     gzip -"$x" entries/*
     nownow=$(date +%s%3N)
@@ -24,7 +24,7 @@ do_gzip() {
 
 do_zstd() {
   for x in {1..19}; do
-    do_extract
+    do_extract "$@"
     now=$(date +%s%3N)
     zstd -"$x" entries/*
     nownow=$(date +%s%3N)
@@ -38,7 +38,7 @@ do_zstd() {
 
 do_zstd_dict() {
   for x in {1..19}; do
-    do_extract
+    do_extract "$@"
     zstd -"$x" --train entries-samples/*
     now=$(date +%s%3N)
     zstd -"$x" -D dictionary entries/*
@@ -53,7 +53,7 @@ do_zstd_dict() {
 
 do_lz4() {
   for x in {1..9}; do
-    do_extract
+    do_extract "$@"
     now=$(date +%s%3N)
     lz4 -"$x" -m entries/*
     nownow=$(date +%s%3N)
@@ -66,7 +66,7 @@ do_lz4() {
 
 }
 
-#do_gzip
-do_zstd
-#do_zstd_dict
-#do_lz4
+#do_gzip "$@"
+do_zstd "$@"
+#do_zstd_dict "$@"
+#do_lz4 "$@"
