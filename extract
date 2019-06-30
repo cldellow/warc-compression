@@ -1,8 +1,29 @@
 #!/bin/bash
-./extract-entries /mnt/storage/cc/CC-MAIN-20181113000225-20181113022225-00331.warc.gz 5000
-rm -rf entries-samples
-cp -ar entries entries-samples
-for x in entries-samples/*; do
-  head -c10000 "$x" > x
-  mv x "$x"
-done
+here=$(dirname "${BASH_SOURCE[0]}")
+here=$(readlink -f "$here")
+
+# On cldellow's dev machine, use a local file for ease of testing.
+if [ -e /mnt/storage/cc/CC-MAIN-20181113000225-20181113022225-00331.warc.gz ]; then
+  "$here"/extract-entries /mnt/storage/cc/CC-MAIN-20181113000225-20181113022225-00331.warc.gz 5000
+  rm -rf entries-samples
+  cp -ar entries entries-samples
+  for x in entries-samples/*; do
+    head -c10000 "$x" > x
+    mv x "$x"
+  done
+else
+  # On an EC2 machine, switch based on first arg.
+  kind=${1:?must specify kind, "warc" or "wet"}
+
+  if [ "$kind" == "warc" ]; then
+    "$here"/extract-entries ./train.warc.gz 5000
+    rm -rf entries-samples
+    mv entries entries-samples
+    for x in entries-samples/*; do
+      head -c10000 "$x" > x
+      mv x "$x"
+    done
+
+    "$here"/extract-entries ./test.warc.gz 5000
+  fi
+fi

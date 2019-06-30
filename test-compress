@@ -1,8 +1,11 @@
 #!/bin/bash
 set -eu
 
+here=$(dirname "${BASH_SOURCE[0]}")
+here=$(readlink -f "$here")
+
 do_extract() {
-  ./extract
+  "$here"/extract
 }
 
 do_gzip() {
