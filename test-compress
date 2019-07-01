@@ -27,7 +27,7 @@ do_gzip() {
 
 do_zstd() {
   total=$(du --bytes e.bak | awk '{print $1}')
-  for x in {1..19}; do
+  for x in {1..16}; do
     rm -rf e s
     cp -ar e.bak e
     now=$(date +%s%3N)
@@ -44,10 +44,11 @@ do_zstd() {
 
 do_zstd_dict() {
   total=$(du --bytes e.bak | awk '{print $1}')
-  for x in {1..19}; do
+  for x in {1..16}; do
     rm -rf e s
     cp -ar e.bak e
     cp -ar s.bak s
+    #zstd -"$x" --quiet --maxdict 1048576 --train s/*
     zstd -"$x" --quiet --train s/*
     now=$(date +%s%3N)
     zstd -"$x" -D dictionary e/*
@@ -70,7 +71,7 @@ do_lz4() {
     lz4 -"$x" -m e/*
     nownow=$(date +%s%3N)
     elapsed=$((nownow-now))
-    find e/ | grep '\.lz4$' | xargs lz4cat > /dev/null
+    find e/ | grep '\.lz4$' | xargs cat | lz4cat > /dev/null
     now=$(date +%s%3N)
     cat_elapsed=$((now-$nownow))
     lz4_total=$(ls -l e | grep '\.lz4$' | awk '{ N += $5 } END { print N }')
@@ -79,12 +80,12 @@ do_lz4() {
 
 }
 
-#rm -rf e e.bak s s.bak
-#do_extract "$@"
-#mv e e.bak
-#mv s s.bak
+rm -rf e e.bak s s.bak
+do_extract "$@"
+mv e e.bak
+mv s s.bak
 
-#do_gzip "$@"
-#do_lz4 "$@"
+do_gzip "$@"
+do_lz4 "$@"
 do_zstd "$@"
-#do_zstd_dict "$@"
+do_zstd_dict "$@"
