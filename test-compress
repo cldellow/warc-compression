@@ -9,6 +9,7 @@ do_extract() {
 }
 
 do_gzip() {
+  total=$(du --bytes e.bak | awk '{print $1}')
   for x in {1..9}; do
     rm -rf e s
     cp -ar e.bak e
@@ -16,14 +17,16 @@ do_gzip() {
     gzip -"$x" e/*
     nownow=$(date +%s%3N)
     elapsed=$((nownow-now))
-    zcat e/*gz > /dev/null
+    find e/ | grep '\.gz$' | xargs zcat > /dev/null
     now=$(date +%s%3N)
     cat_elapsed=$((now-$nownow))
-    echo -e "gzip -$x\t$elapsed\t$cat_elapsed\t$(cat e/*.gz | wc --bytes)\t$(cat e.bak/* | wc --bytes)"
+    gz_total=$(ls -l e | grep '\.gz$' | awk '{ N += $5 } END { print N }')
+    echo -e "gzip -$x\t$elapsed\t$cat_elapsed\t$gz_total\t$total"
   done
 }
 
 do_zstd() {
+  total=$(du --bytes e.bak | awk '{print $1}')
   for x in {1..19}; do
     rm -rf e s
     cp -ar e.bak e
@@ -31,14 +34,16 @@ do_zstd() {
     zstd -"$x" e/*
     nownow=$(date +%s%3N)
     elapsed=$((nownow-now))
-    zstdcat e/*zst > /dev/null
+    find e/ | grep '\.zst$' | xargs zstdcat > /dev/null
     now=$(date +%s%3N)
     cat_elapsed=$((now-$nownow))
-    echo -e "zstd -$x\t$elapsed\t$cat_elapsed\t$(cat e/*.zst | wc --bytes)\t$(cat e.bak/* | wc --bytes)"
+    zst_total=$(ls -l e | grep '\.zst$' | awk '{ N += $5 } END { print N }')
+    echo -e "zstd -$x\t$elapsed\t$cat_elapsed\t$zst_total\t$total"
   done
 }
 
 do_zstd_dict() {
+  total=$(du --bytes e.bak | awk '{print $1}')
   for x in {1..19}; do
     rm -rf e s
     cp -ar e.bak e
@@ -48,14 +53,16 @@ do_zstd_dict() {
     zstd -"$x" -D dictionary e/*
     nownow=$(date +%s%3N)
     elapsed=$((nownow-now))
-    zstdcat -D dictionary e/*zst > /dev/null
+    find e/ | grep '\.zst$' | xargs zstdcat -D dictionary > /dev/null
     now=$(date +%s%3N)
     cat_elapsed=$((now-$nownow))
-    echo -e "zstd -$x, dict\t$elapsed\t$cat_elapsed\t$(cat e/*.zst | wc --bytes)\t$(cat e.bak/* | wc --bytes)"
+    zst_total=$(ls -l e | grep '\.zst$' | awk '{ N += $5 } END { print N }')
+    echo -e "zstd -$x, dict\t$elapsed\t$cat_elapsed\t$zst_total\t$total"
   done
 }
 
 do_lz4() {
+  total=$(du --bytes e.bak | awk '{print $1}')
   for x in {1..9}; do
     rm -rf e s
     cp -ar e.bak e
@@ -63,20 +70,21 @@ do_lz4() {
     lz4 -"$x" -m e/*
     nownow=$(date +%s%3N)
     elapsed=$((nownow-now))
-    cat e/*lz4 | lz4cat > /dev/null
+    find e/ | grep '\.lz4$' | xargs lz4cat > /dev/null
     now=$(date +%s%3N)
     cat_elapsed=$((now-$nownow))
-    echo -e "lz4 -$x\t$elapsed\t$cat_elapsed\t$(cat e/*.lz4 | wc --bytes)\t$(cat e.bak/* | wc --bytes)"
+    lz4_total=$(ls -l e | grep '\.lz4$' | awk '{ N += $5 } END { print N }')
+    echo -e "lz4 -$x\t$elapsed\t$cat_elapsed\t$lz4_total\t$total"
   done
 
 }
 
-rm -rf e e.bak s s.bak
-do_extract "$@"
-mv e e.bak
-mv s s.bak
+#rm -rf e e.bak s s.bak
+#do_extract "$@"
+#mv e e.bak
+#mv s s.bak
 
 #do_gzip "$@"
-do_lz4 "$@"
-#do_zstd "$@"
+#do_lz4 "$@"
+do_zstd "$@"
 #do_zstd_dict "$@"
