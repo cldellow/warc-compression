@@ -15,7 +15,7 @@ else
   # On an EC2 machine, switch based on first arg.
   kind=${1:?must specify kind, "warc" or "wet"}
 
-  if [ "$kind" == "warc" ] || [ "$kind" == "wet" ]; then
+  if [ "$kind" == "warc" ] || [ "$kind" == "wet" ] || [ "$kind" == "wat" ]; then
     "$here"/extract-entries ./train."$kind".gz
     rm -rf entries-samples
     mv entries entries-samples

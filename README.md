@@ -37,7 +37,9 @@ sudo make install
 # Fetch sample files
 wget http://commoncrawl.s3.amazonaws.com/crawl-data/CC-MAIN-2019-22/segments/1558232255092.55/warc/CC-MAIN-20190519181530-20190519203530-00051.warc.gz -O train.warc.gz
 wget http://commoncrawl.s3.amazonaws.com/crawl-data/CC-MAIN-2019-22/segments/1558232255092.55/wet/CC-MAIN-20190519181530-20190519203530-00051.warc.wet.gz -O train.wet.gz
+wget http://commoncrawl.s3.amazonaws.com/crawl-data/CC-MAIN-2019-22/segments/1558232255092.55/wat/CC-MAIN-20190519181530-20190519203530-00051.warc.wat.gz -O train.wat.gz
 
 wget http://commoncrawl.s3.amazonaws.com/crawl-data/CC-MAIN-2018-51/segments/1544376823785.24/warc/CC-MAIN-20181212065445-20181212090945-00451.warc.gz -O test.warc.gz
 wget http://commoncrawl.s3.amazonaws.com/crawl-data/CC-MAIN-2018-51/segments/1544376823785.24/wet/CC-MAIN-20181212065445-20181212090945-00451.warc.wet.gz -O test.wet.gz
+wget http://commoncrawl.s3.amazonaws.com/crawl-data/CC-MAIN-2018-51/segments/1544376823785.24/wat/CC-MAIN-20181212065445-20181212090945-00451.warc.wat.gz -O test.wat.gz
 ```
