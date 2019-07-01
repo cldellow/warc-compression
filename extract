@@ -5,9 +5,9 @@ here=$(readlink -f "$here")
 # On cldellow's dev machine, use a local file for ease of testing.
 if [ -e /mnt/storage/cc/CC-MAIN-20181113000225-20181113022225-00331.warc.gz ]; then
   "$here"/extract-entries /mnt/storage/cc/CC-MAIN-20181113000225-20181113022225-00331.warc.gz 5000
-  rm -rf entries-samples
-  cp -ar entries entries-samples
-  for x in entries-samples/*; do
+  rm -rf s
+  cp -ar e s
+  for x in s/*; do
     head -c10000 "$x" > x
     mv x "$x"
   done
@@ -17,9 +17,9 @@ else
 
   if [ "$kind" == "warc" ] || [ "$kind" == "wet" ] || [ "$kind" == "wat" ]; then
     "$here"/extract-entries ./train."$kind".gz
-    rm -rf entries-samples
-    mv entries entries-samples
-    for x in entries-samples/*; do
+    rm -rf s
+    mv e s
+    for x in s/*; do
       head -c10000 "$x" > x
       mv x "$x"
     done

@@ -10,71 +10,71 @@ do_extract() {
 
 do_gzip() {
   for x in {1..9}; do
-    rm -rf entries entries-samples
-    cp -ar entries.bak entries
+    rm -rf e s
+    cp -ar e.bak e
     now=$(date +%s%3N)
-    gzip -"$x" entries/*
+    gzip -"$x" e/*
     nownow=$(date +%s%3N)
     elapsed=$((nownow-now))
-    zcat entries/*gz > /dev/null
+    zcat e/*gz > /dev/null
     now=$(date +%s%3N)
     cat_elapsed=$((now-$nownow))
-    echo -e "gzip -$x\t$elapsed\t$cat_elapsed\t$(cat entries/*.gz | wc --bytes)\t$(cat entries.bak/* | wc --bytes)"
+    echo -e "gzip -$x\t$elapsed\t$cat_elapsed\t$(cat e/*.gz | wc --bytes)\t$(cat e.bak/* | wc --bytes)"
   done
 }
 
 do_zstd() {
   for x in {1..19}; do
-    rm -rf entries entries-samples
-    cp -ar entries.bak entries
+    rm -rf e s
+    cp -ar e.bak e
     now=$(date +%s%3N)
-    zstd -"$x" entries/*
+    zstd -"$x" e/*
     nownow=$(date +%s%3N)
     elapsed=$((nownow-now))
-    zstdcat entries/*zst > /dev/null
+    zstdcat e/*zst > /dev/null
     now=$(date +%s%3N)
     cat_elapsed=$((now-$nownow))
-    echo -e "zstd -$x\t$elapsed\t$cat_elapsed\t$(cat entries/*.zst | wc --bytes)\t$(cat entries.bak/* | wc --bytes)"
+    echo -e "zstd -$x\t$elapsed\t$cat_elapsed\t$(cat e/*.zst | wc --bytes)\t$(cat e.bak/* | wc --bytes)"
   done
 }
 
 do_zstd_dict() {
   for x in {1..19}; do
-    rm -rf entries entries-samples
-    cp -ar entries.bak entries
-    cp -ar entries-samples.bak entries-samples
-    zstd -"$x" --quiet --train entries-samples/*
+    rm -rf e s
+    cp -ar e.bak e
+    cp -ar s.bak s
+    zstd -"$x" --quiet --train s/*
     now=$(date +%s%3N)
-    zstd -"$x" -D dictionary entries/*
+    zstd -"$x" -D dictionary e/*
     nownow=$(date +%s%3N)
     elapsed=$((nownow-now))
-    zstdcat -D dictionary entries/*zst > /dev/null
+    zstdcat -D dictionary e/*zst > /dev/null
     now=$(date +%s%3N)
     cat_elapsed=$((now-$nownow))
-    echo -e "zstd -$x, dict\t$elapsed\t$cat_elapsed\t$(cat entries/*.zst | wc --bytes)\t$(cat entries.bak/* | wc --bytes)"
+    echo -e "zstd -$x, dict\t$elapsed\t$cat_elapsed\t$(cat e/*.zst | wc --bytes)\t$(cat e.bak/* | wc --bytes)"
   done
 }
 
 do_lz4() {
   for x in {1..9}; do
-    rm -rf entries entries-samples
-    cp -ar entries.bak entries
+    rm -rf e s
+    cp -ar e.bak e
     now=$(date +%s%3N)
-    lz4 -"$x" -m entries/*
+    lz4 -"$x" -m e/*
     nownow=$(date +%s%3N)
     elapsed=$((nownow-now))
-    cat entries/*lz4 | lz4cat > /dev/null
+    cat e/*lz4 | lz4cat > /dev/null
     now=$(date +%s%3N)
     cat_elapsed=$((now-$nownow))
-    echo -e "lz4 -$x\t$elapsed\t$cat_elapsed\t$(cat entries/*.lz4 | wc --bytes)\t$(cat entries.bak/* | wc --bytes)"
+    echo -e "lz4 -$x\t$elapsed\t$cat_elapsed\t$(cat e/*.lz4 | wc --bytes)\t$(cat e.bak/* | wc --bytes)"
   done
 
 }
 
-rm -rf entries*
+rm -rf e e.bak s s.bak
 do_extract "$@"
-mv entries entries.bak
-mv entries-samples entries-samples.bak
+mv e e.bak
+mv s s.bak
 
 #do_gzip "$@"
 do_lz4 "$@"

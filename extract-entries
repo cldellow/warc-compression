@@ -23,12 +23,12 @@ main() {
   file=${1:?must specify WARC archive, either local file or http URL}
   entries=${2:-999999}
 
-  rm -rf entries
-  mkdir entries
+  rm -rf e
+  mkdir e
   zcat "$1" |
-    awk -v entries="$entries" '
+    awk -v alpha="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_+,:[]%@^" -v entries="$entries" '
     BEGIN { n = 0 }
-    /^WARC\/1.0/ { n = n + 1; close(f); f = sprintf("entries/%06d", n); if (n > entries) { exit 0 } }
+    /^WARC\/1.0/ { n = n + 1; close(f); p = n; f = "e/"; do { m = p % length(alpha); f = f substr(alpha, m + 1, 1); p = int(p / length(alpha)); } while (p > 0); if (n > entries) { exit 0 } }
     { print >> f }
     END { close(f) }
     '
