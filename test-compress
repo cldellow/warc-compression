@@ -48,7 +48,6 @@ do_zstd_dict() {
     rm -rf e s
     cp -ar e.bak e
     cp -ar s.bak s
-    #zstd -"$x" --quiet --maxdict 1048576 --train s/*
     zstd -"$x" --quiet --train s/*
     now=$(date +%s%3N)
     zstd -"$x" -D dictionary e/*
@@ -59,6 +58,25 @@ do_zstd_dict() {
     cat_elapsed=$((now-$nownow))
     zst_total=$(ls -l e | grep '\.zst$' | awk '{ N += $5 } END { print N }')
     echo -e "zstd -$x, dict\t$elapsed\t$cat_elapsed\t$zst_total\t$total"
+  done
+}
+
+do_zstd_dict_1M() {
+  total=$(du --bytes e.bak | awk '{print $1}')
+  for x in {1..16}; do
+    rm -rf e s
+    cp -ar e.bak e
+    cp -ar s.bak s
+    zstd -"$x" --quiet --maxdict 1048576 --train s/*
+    now=$(date +%s%3N)
+    zstd -"$x" -D dictionary e/*
+    nownow=$(date +%s%3N)
+    elapsed=$((nownow-now))
+    find e/ | grep '\.zst$' | xargs zstdcat -D dictionary > /dev/null
+    now=$(date +%s%3N)
+    cat_elapsed=$((now-$nownow))
+    zst_total=$(ls -l e | grep '\.zst$' | awk '{ N += $5 } END { print N }')
+    echo -e "zstd -$x, dict 1M\t$elapsed\t$cat_elapsed\t$zst_total\t$total"
   done
 }
 
@@ -89,3 +107,4 @@ do_gzip "$@"
 do_lz4 "$@"
 do_zstd "$@"
 do_zstd_dict "$@"
+do_zstd_dict_1M "$@"
