@@ -89,9 +89,40 @@ for x in em er; do echo -n "$x "; ls -l $x/*.zst | awk '{ N += $5 } END { print 
 #em 8488818
 #er 8183580
 
-# Filter responses that are a specific language. This requires a bit of a process:
+# Filter responses that are a specific language. Conceptually:
 # 1) Copy all responses to own folder
 # 2) Copy all requests that have cld2 metadata for language X to own folder
 # 3) Extract WARC-Concurrent-To fields from (2) to file
 # 4) Use IDs in (3) to do fgrep in files in (1) for responsive records
+#
+# Or do this insanity:
+mkdir ei si eb sb
+for lang in deu; do
+  zstd --train -o dict.$lang -9 $(grep Concurrent-To $(grep cld2.*$lang s/* -l) | sed -e 's#.*<##' -e 's#>##' -e 's#\r##' -e 's#^#WARC-Record-ID: <#' | grep -l --fixed-strings -f - s/*)
+  zstd -9 -D dict.$lang $(grep Concurrent-To $(grep cld2.*$lang e/* -l) | sed -e 's#.*<##' -e 's#>##' -e 's#\r##' -e 's#^#WARC-Record-ID: <#' | grep -l --fixed-strings -f - e/*)
+  ls -l e/*.zst | awk '{ N += $5 } END { print "dict lang " N }'
+
+  rm e/*.zst
+  zstd --train --maxdict 1048576 -o dict.$lang -9 $(grep Concurrent-To $(grep cld2.*$lang s/* -l) | sed -e 's#.*<##' -e 's#>##' -e 's#\r##' -e 's#^#WARC-Record-ID: <#' | grep -l --fixed-strings -f - s/*)
+  zstd -9 -D dict.$lang $(grep Concurrent-To $(grep cld2.*$lang e/* -l) | sed -e 's#.*<##' -e 's#>##' -e 's#\r##' -e 's#^#WARC-Record-ID: <#' | grep -l --fixed-strings -f - e/*)
+  ls -l e/*.zst | awk '{ N += $5 } END { print "dict lang1M " N }'
+
+
+  rm e/*.zst
+  zstd -9 -D dict.generic $(grep Concurrent-To $(grep cld2.*$lang e/* -l) | sed -e 's#.*<##' -e 's#>##' -e 's#\r##' -e 's#^#WARC-Record-ID: <#' | grep -l --fixed-strings -f - e/*)
+  ls -l e/*.zst | awk '{ N += $5 } END { print "dict generic " N }'
+
+  rm e/*.zst
+  zstd -9 $(grep Concurrent-To $(grep cld2.*$lang e/* -l) | sed -e 's#.*<##' -e 's#>##' -e 's#\r##' -e 's#^#WARC-Record-ID: <#' | grep -l --fixed-strings -f - e/*)
+  ls -l e/*.zst | awk '{ N += $5 } END { print "no dict " N }'
+  zstdcat e/*.zst | wc -c
+done
 ```
+
+Doing a German-specific dictionary gives only marginal benefit:
+
+- raw:              225,203,004
+- zstd, no dict:     40,032,770
+- zstd, dict:        35,659,064
+- zstd, dict deu:    35,249,785
+- zstd, dict deu 1M: 35,079,202
