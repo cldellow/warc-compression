@@ -29,6 +29,7 @@ sudo mount -t tmpfs -o size=24G tmpfs /mnt/ramdisk
 sudo apt-get update
 sudo apt-get install liblz4-tool build-essential
 
+git clone https://github.com/cldellow/warc-compression.git
 git clone https://github.com/facebook/zstd.git
 cd zstd
 make -j4
